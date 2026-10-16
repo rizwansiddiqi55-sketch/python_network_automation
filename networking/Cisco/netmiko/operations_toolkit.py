@@ -32,7 +32,7 @@ COMMANDS = {
     "mac": "show mac address-table",
     "neighbors": "show lldp neighbors detail",
     "routes": "show ip route",
-    "resources": "show processes cpu | include CPU|show processes memory | include Processor"
+    "resources": "show processes cpu | include CPU utilization\nshow processes memory | include Processor"
 }
 TSHOOT_COMMANDS = [
     "show ip interface brief",
@@ -57,7 +57,11 @@ def save_output(name: str, output: str) -> None:
 
 def run_show(connection, name: str, command: str) -> None:
     print(f"\n===== {name.upper()} =====")
-    output = connection.send_command(command, read_timeout=60)
+    parts = []
+    for item in command.splitlines():
+        result = connection.send_command(item, read_timeout=60)
+        parts.append(f"===== {item} =====\n{result}")
+    output = "\n\n".join(parts)
     print(output)
     save_output(name, output)
 
