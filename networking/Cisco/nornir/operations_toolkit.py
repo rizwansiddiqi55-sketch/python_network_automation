@@ -28,7 +28,7 @@ COMMANDS = {
     "mac": "show mac address-table",
     "neighbors": "show lldp neighbors detail",
     "routes": "show ip route",
-    "resources": "show processes cpu | include CPU|show processes memory | include Processor"
+    "resources": "show processes cpu | include CPU utilization\nshow processes memory | include Processor"
 }
 TSHOOT_COMMANDS = [
     "show ip interface brief",
@@ -50,12 +50,13 @@ def collect(task: Task) -> Result:
 
     sections = []
     for command in commands:
-        result = task.run(
-            task=netmiko_send_command,
-            command_string=command,
-            read_timeout=60,
-        )
-        sections.append(f"===== {command} =====\n{result.result}")
+        for item in command.splitlines():
+            result = task.run(
+                task=netmiko_send_command,
+                command_string=item,
+                read_timeout=60,
+            )
+            sections.append(f"===== {item} =====\n{result.result}")
 
     if APPLY_CHANGE:
         task.run(
