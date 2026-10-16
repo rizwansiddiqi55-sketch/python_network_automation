@@ -108,11 +108,10 @@ def main() -> None:
             print(json.dumps(device.facts, indent=2, default=str))
 
         elif OPERATION == "show":
-            for command, output in zip(
-            profile["show_commands"],
-            device.show_list(profile["show_commands"], raw_text=True),
-        ):
-            print(f"===== {command} =====\n{output}")
+            commands = profile["show_commands"]
+            outputs = device.show_list(commands, raw_text=True)
+            for command, output in zip(commands, outputs):
+                print(f"===== {command} =====\n{output}")
 
         elif OPERATION == "running_config":
             print(device.running_config)
